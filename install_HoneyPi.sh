@@ -9,12 +9,26 @@
 
 
 ###Funcs
+
+# =======================
+# = UPDATE =
+# =======================
+f_update(){
+cd /var/www/kippo-graph && git pull &&  chmod 777 generated-graphs
+cd /opt/kippo-read-only && svn update
+cd /opt/glastopf && git pull
+cd /opt/honssh && git pull
+cd /opt/wordpot && git pull
+cd /opt/kippo-malware && git pull
+cd /opt/twisted-honeypots && git pull
+}
+
 # =======================
 # = INSTALLING WORDPOT =
 # =======================
 f_install_wordpot(){
 cd /opt
-sudo git clone https://github.com/gbrindisi/wordpot.git
+git clone https://github.com/gbrindisi/wordpot.git
 echo "Installed to /opt/wordpot"
 sleep 5
 f_install
@@ -26,7 +40,7 @@ f_install
 f_install_twisted_honeypots(){
 echo "Installing to /opt/twisted-honeypots"
 cd /opt/
-sudo git clone https://code.google.com/p/twisted-honeypots/
+git clone https://code.google.com/p/twisted-honeypots/
 echo "Installed to /opt/twisted-honeypots"
 sleep 5
 f_install
@@ -36,18 +50,19 @@ f_install
 # = INSTALLING DIONAEA =
 # =======================
 f_install_dionaea(){
-echo "deb http://packages.s7t.de/raspbian wheezy main" | sudo tee -a /etc/apt/sources.list
-sudo apt-get update
-sudo apt-get install -y libglib2.0-dev libssl-dev libcurl4-openssl-dev libreadline-dev
-sudo apt-get install -y autoconf build-essential subversion git-core flex bison libsqlite3-dev
-sudo apt-get install -y pkg-config libnl-3-dev libnl-genl-3-dev libnl-nf-3-dev libtool
-sudo apt-get install --force-yes -y libnl-route-3-dev liblcfg libemu libev dionaea-python automake
-sudo apt-get install --force-yes -y dionaea-cython libpcap udns dionaea sqlite3
-sudo apt-get install --force-yes -y p0f
-sudo cp /opt/dionaea/etc/dionaea/dionaea.conf.dist /opt/dionaea/etc/dionaea/dionaea.conf
-sudo chown nobody:nogroup /opt/dionaea/var/dionaea -R
-echo "Install finished. Configuration at /opt/dionaea/etc/dionaea/dionaea.conf"
-sleep 5
+echo "deb http://packages.s7t.de/raspbian wheezy main" | tee -a /etc/apt/sources.list
+	echo "updating package cache"
+ apt-get update >> /dev/null
+		apt-get install -y libglib2.0-dev libssl-dev libcurl4-openssl-dev libreadline-dev
+		apt-get install -y autoconf build-essential subversion git-core flex bison libsqlite3-dev
+		apt-get install -y pkg-config libnl-3-dev libnl-genl-3-dev libnl-nf-3-dev libtool
+		apt-get install --force-yes -y libnl-route-3-dev liblcfg libemu libev dionaea-python automake
+		apt-get install --force-yes -y dionaea-cython libpcap udns dionaea sqlite3
+		apt-get install --force-yes -y p0f
+		cp /opt/dionaea/etc/dionaea/dionaea.conf.dist /opt/dionaea/etc/dionaea/dionaea.conf
+		chown root:root /opt/dionaea/var/dionaea -R ## might be a problem with debian jessie--> chown utility upgraded to get only gid & not its name (root:0|br0k3ngl255:1000)
+		echo "Install finished. Configuration at /opt/dionaea/etc/dionaea/dionaea.conf"
+	sleep 5
 f_install
 }
 
@@ -72,12 +87,12 @@ esac
 # = INSTALLING HONSSH =
 # =======================
 f_install_honssh(){
-sudo apt-get update
-sudo apt-get install -y python-twisted python-espeak espeak
+ apt-get update
+ apt-get install -y python-twisted python-espeak espeak
 cd /opt
 git clone https://code.google.com/p/honssh/
 cd honssh
-sudo chmod +x honsshctrl.sh
+ chmod +x honsshctrl.sh
 echo "Modify /opt/honssh/conssh.cfg manually to set up"
 sleep 5
 f_interface
@@ -87,19 +102,19 @@ f_interface
 # = INSTALLING MALWARECRAWLER =
 # ===============================
 f_install_malwarecrawler(){
-sudo apt-get update
-sudo apt-get install -y python-m2crypto python-pyasn1 python-magic python-pip
-sudo pip install hachoir-core hachoir-parser hachoir-regex hachoir-subfile
-sudo pip install httplib2 yapsy beautifulsoup Jinja2 pymongo
+ apt-get update
+ apt-get install -y python-m2crypto python-pyasn1 python-magic python-pip
+ pip install hachoir-core hachoir-parser hachoir-regex hachoir-subfile
+ pip install httplib2 yapsy beautifulsoup Jinja2 pymongo
 cd /opt
-sudo mkdir ragpicker
+ mkdir ragpicker
 cd ragpicker
-sudo wget https://malware-crawler.googlecode.com/git/MalwareCrawler/versions/ragpicker_v0.02.10.tar.gz
-sudo tar xvf ragpicker_v0.02.10.tar.gz
-sudo rm -rf ragpicker_v0.02.10.tar.gz
+ wget https://malware-crawler.googlecode.com/git/MalwareCrawler/versions/ragpicker_v0.02.10.tar.gz
+ tar xvf ragpicker_v0.02.10.tar.gz
+ rm -rf ragpicker_v0.02.10.tar.gz
 cd /opt
-sudo chown -R pi ragpicker
-sudo chmod 777 ragpicker/dumpdir
+ chown -R pi ragpicker
+ chmod 777 ragpicker/dumpdir
 echo "Installed to /opt/ragpicker"
 sleep 5
 f_install
@@ -112,34 +127,35 @@ f_install_glastopf(){
 gpg --keyserver pgpkeys.mit.edu --recv-key 8B48AD6246925553
 gpg -a --export 8B48AD6246925553 | sudo apt-key add -
 echo "deb http://ftp.debian.org/debian wheezy-backports main contrib non-free" | sudo tee -a /etc/apt/sources.list
-sudo apt-get update
-sudo apt-get install -y python python-openssl python-gevent libevent-dev python-dev build-essential make
-sudo apt-get install -y python-argparse python-chardet python-requests python-sqlalchemy python-lxml
-sudo apt-get install -y python-numpy-dev python-scipy libatlas-dev g++ git php5 php5-dev liblapack-dev gfortran
-sudo apt-get install -y libxml2-dev libxslt-dev libmysqlclient-dev git-core
-sudo pip install –-upgrade distribute
-sudo pip install greenlet --upgrade
-sudo pip install cython
-sudo pip install pylibinjection
+ apt-get update
+ apt-get install -y python python-openssl python-gevent libevent-dev python-dev build-essential make\
+					python-argparse python-chardet python-requests python-sqlalchemy python-lxml\
+					python-numpy-dev python-scipy libatlas-dev g++ git php5 php5-dev liblapack-dev gfortran\
+					libxml2-dev libxslt-dev libmysqlclient-dev git-core
+					 
+ pip install --upgrade distribute
+ pip install greenlet --upgrade
+ pip install cython
+ pip install pylibinjection
 # INSTALL BFR (PHP DEPENDENCY) #
 cd /opt
 sudo git clone git://github.com/glastopf/BFR.git
 cd BFR
-sudo phpize
-sudo ./configure
-sudo make && make install
+ phpize
+ ./configure
+ make && make install
 cd modules
 sudo cp bfr.so /usr/lib/php5/20100525+lfs/
 echo "zend_extension = /usr/lib/php5/20100525+lfs/bfr.so" | sudo tee -a /etc/php5/cli/php.ini
 # INSTALL GLASTOPF #
 cd /opt
-sudo git clone https://github.com/glastopf/glastopf.git
+ git clone https://github.com/glastopf/glastopf.git
 cd glastopf
-sudo python setup.py install
+ python setup.py install
 cd /opt
-sudo mkdir glastopfi
-sudo service apache2 restart
-sudo rm -rf BFR
+ mkdir glastopfi
+ service apache2 restart
+ rm -rf BFR
 echo "Installed to /opt/glastopf"
 sleep 5
 f_install
@@ -272,4 +288,7 @@ clear
 				0) f_interface ;;
 				*) echo "Incorrect choice..." ;
 			esac
+else 
+ echo "Get Root or Get Lost"
+fi
 }
