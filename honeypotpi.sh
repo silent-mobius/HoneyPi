@@ -1,4 +1,5 @@
-#! /bin/sh
+#! /bin/bash
+set -x
 ### BEGIN INIT INFO
 # Provides:          honeyPot
 # Should-Start:      
@@ -54,20 +55,6 @@ clear
 ##################################################################
 
 # =======================
-# = UPDATE =
-# =======================
-f_update(){
-cd /var/www/kippo-graph && git pull &&  chmod 777 generated-graphs
-cd /opt/kippo-read-only && svn update
-cd /opt/glastopf && git pull
-cd /opt/honssh && git pull
-cd /opt/wordpot && git pull
-cd /opt/kippo-malware && git pull
-cd /opt/twisted-honeypots && git pull
-}
-
-
-# =======================
 # = RUNNING GLASTOPF =
 # =======================
 f_run_glastopf(){
@@ -101,11 +88,22 @@ f_run_kippo(){
 cd /opt/kippo-read-only
 ./start.sh
 }
+
+# ========================
+# = RUNNING ALL TOGETHER =
+# ========================
+f_run(){
+				f_run_glastopf
+			f_run_dionaea
+		f_run_ragpicker
+	f_run_honssh
+f_run_kippo
+	}
 # =======================
 # = BEING PROGRAM =
 # =======================
-if [ uid == "0" ];then
-	f_interface
+if [ $UID == "0" ];then
+	f_run
 else
 	echo "Get Root or Get Lost"
 fi
