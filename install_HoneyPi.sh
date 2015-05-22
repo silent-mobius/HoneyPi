@@ -1,8 +1,8 @@
 #!/bin/bash
-
+#set -x
 ########################################################################
-#
-#
+#recreated the binkybear's HoneyPi.sh  by br0k3ngl255
+# meant to be more stealthy & efficient.
 ########################################################################
 
 ###Vars
@@ -95,7 +95,7 @@ cd honssh
  chmod +x honsshctrl.sh
 echo "Modify /opt/honssh/conssh.cfg manually to set up"
 sleep 5
-f_interface
+f_install
 }
 
 # ===============================
@@ -285,10 +285,12 @@ clear
 				5) f_install_kojoney ;;
 				6) f_install_twisted_honeypots ;;
 				7) f_install_glastopf ;;
-				0) f_interface ;;
+				0) exit 0 ;;
 				*) echo "Incorrect choice..." ;
 			esac
 else 
  echo "Get Root or Get Lost"
 fi
 }
+
+f_install
