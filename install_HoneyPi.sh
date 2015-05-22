@@ -38,11 +38,11 @@ f_install
 # = INSTALLING TWISTED HONEYPOTS =
 # =================================
 f_install_twisted_honeypots(){
-echo "Installing to /opt/twisted-honeypots"
-cd /opt/
-git clone https://code.google.com/p/twisted-honeypots/
-echo "Installed to /opt/twisted-honeypots"
-sleep 5
+	echo "Installing to /opt/twisted-honeypots"
+		cd /opt/
+		git clone https://code.google.com/p/twisted-honeypots/
+		echo "Installed to /opt/twisted-honeypots"
+	sleep 5
 f_install
 }
 
@@ -68,19 +68,19 @@ f_install
 
 f_install(){
 clear
-echo "************************"
-toilet -f standard -F metal "RUN"
-echo "************************"
-echo "[1] Run Kippo"
-echo "[0] Exit"
-echo -n "Enter your menu choice [1-4]: "
-# wait for character input
-read -p "Choice:" menuchoice
-case $menuchoice in
-1) f_run_kippo ;;
-0) exit 0 ;;
-*) echo "Incorrect choice..." ;
-esac
+		echo "************************"
+		toilet -f standard -F metal "RUN"
+		echo "************************"
+			echo "[1] Run Kippo"
+			echo "[0] Exit"
+			echo -n "Enter your menu choice [0-1]: "
+			# wait for character input
+				read -p "Choice:" menuchoice
+					case $menuchoice in
+						1) f_run_kippo ;;
+						0) exit 0 ;;
+						*) echo "Incorrect choice..." ;
+					esac
 }
 
 # =======================
@@ -125,8 +125,8 @@ f_install
 f_install_glastopf(){
 # DEPENDENCIES #
 gpg --keyserver pgpkeys.mit.edu --recv-key 8B48AD6246925553
-gpg -a --export 8B48AD6246925553 | sudo apt-key add -
-echo "deb http://ftp.debian.org/debian wheezy-backports main contrib non-free" | sudo tee -a /etc/apt/sources.list
+gpg -a --export 8B48AD6246925553 | apt-key add -
+echo "deb http://ftp.debian.org/debian wheezy-backports main contrib non-free" | tee -a /etc/apt/sources.list
  apt-get update
  apt-get install -y python python-openssl python-gevent libevent-dev python-dev build-essential make\
 					python-argparse python-chardet python-requests python-sqlalchemy python-lxml\
@@ -139,14 +139,14 @@ echo "deb http://ftp.debian.org/debian wheezy-backports main contrib non-free" |
  pip install pylibinjection
 # INSTALL BFR (PHP DEPENDENCY) #
 cd /opt
-sudo git clone git://github.com/glastopf/BFR.git
+ git clone git://github.com/glastopf/BFR.git
 cd BFR
  phpize
  ./configure
  make && make install
 cd modules
-sudo cp bfr.so /usr/lib/php5/20100525+lfs/
-echo "zend_extension = /usr/lib/php5/20100525+lfs/bfr.so" | sudo tee -a /etc/php5/cli/php.ini
+ cp bfr.so /usr/lib/php5/20100525+lfs/
+echo "zend_extension = /usr/lib/php5/20100525+lfs/bfr.so" |tee -a /etc/php5/cli/php.ini
 # INSTALL GLASTOPF #
 cd /opt
  git clone https://github.com/glastopf/glastopf.git
@@ -167,55 +167,55 @@ f_install
 # =======================
 f_install_kippo(){
 echo "Installing dependencies..."
-sudo apt-get install -y python-pip
-sudo apt-get install -y mysql-server python-mysqldb git
-sudo apt-get install -y subversion python-twisted apache2 authbind
-sudo apt-get install -y libapache2-mod-php5 php5-cli php5-common php5-cgi php5-mysql php5-gd
+ apt-get install -y python-pip
+ apt-get install -y mysql-server python-mysqldb git
+ apt-get install -y subversion python-twisted apache2 authbind
+ apt-get install -y libapache2-mod-php5 php5-cli php5-common php5-cgi php5-mysql php5-gd
 cd /opt
-sudo svn checkout http://kippo.googlecode.com/svn/trunk/ kippo-read-only
+ svn checkout http://kippo.googlecode.com/svn/trunk/ kippo-read-only
 cd /opt/kippo-read-only/kippo/commands
-sudo mv base.py base.py.bakup
-sudo wget https://gist.githubusercontent.com/zwned/5588521/raw/7b351a17c760e48c1efed064aaf73a28b0f36a73/base.py
+ mv base.py base.py.bakup
+ wget https://gist.githubusercontent.com/zwned/5588521/raw/7b351a17c760e48c1efed064aaf73a28b0f36a73/base.py
 cd /opt/kippo-read-only/kippo
-sudo mv __init__.py __init__.py.bak
-echo "from kippo_extra import loader" | sudo tee -a __init__.py
+ mv __init__.py __init__.py.bak
+echo "from kippo_extra import loader" |tee -a __init__.py
 cd /opt
-sudo chown -R pi /opt/kippo-read-only
-sudo chown -R pi /usr/local/lib/python2.7/
-sudo touch /etc/authbind/byport/22
-sudo chown -R pi /etc/authbind/byport/22
-sudo chmod 777 /etc/authbind/byport/22
-sudo chmod +x /opt/kippo-read-only/start.sh
+ chown -R pi /opt/kippo-read-only
+ chown -R pi /usr/local/lib/python2.7/
+ touch /etc/authbind/byport/22
+ chown -R pi /etc/authbind/byport/22
+ chmod 777 /etc/authbind/byport/22
+ chmod +x /opt/kippo-read-only/start.sh
 cd /opt/kippo-read-only/doc/sql
 read -p "Enter your mysql password for database installation:" $mysqlpass
 read -p "Create a new password for a kippo database:" $kippopass
 mysql -h localhost --user="root" --password="$mysqlpass" --execute="CREATE DATABASE kippo;GRANT ALL ON kippo.* TO 'kippo'@'localhost' IDENTIFIED BY '$kippopass';"
 mysql -h localhost --user="kippo" --password="$kippopass" --execute="use kippo;source mysql.sql;"
 cd /opt/kippo-read-only/
-sudo cp kippo.cfg.dist kippo.cfg
-sudo sed -i 's/ssh_port = 2222/ssh_port = 22/g' /opt/kippo-read-only/kippo.cfg
-sudo sed -i '161s/.*/[database_mysql]/' /opt/kippo-read-only/kippo.cfg
-sudo sed -i 's/#host = localhost/host = localhost/g' /opt/kippo-read-only/kippo.cfg
-sudo sed -i 's/#database = kippo/database = kippo/g' /opt/kippo-read-only/kippo.cfg
-sudo sed -i 's/#username = kippo/username = kippo/g' /opt/kippo-read-only/kippo.cfg
-sudo sed -i 's/#password = secret/password = '$kippopass'/g' /opt/kippo-read-only/kippo.cfg
-sudo sed -i 's/#port = 3306/port = 3306/g' /opt/kippo-read-only/kippo.cfg
-sudo mv start.sh start.sh.bak
+ cp kippo.cfg.dist kippo.cfg
+ sed -i 's/ssh_port = 2222/ssh_port = 22/g' /opt/kippo-read-only/kippo.cfg
+ sed -i '161s/.*/[database_mysql]/' /opt/kippo-read-only/kippo.cfg
+ sed -i 's/#host = localhost/host = localhost/g' /opt/kippo-read-only/kippo.cfg
+ sed -i 's/#database = kippo/database = kippo/g' /opt/kippo-read-only/kippo.cfg
+ sed -i 's/#username = kippo/username = kippo/g' /opt/kippo-read-only/kippo.cfg
+ sed -i 's/#password = secret/password = '$kippopass'/g' /opt/kippo-read-only/kippo.cfg
+ sed -i 's/#port = 3306/port = 3306/g' /opt/kippo-read-only/kippo.cfg
+ mv start.sh start.sh.bak
 echo "
 #!/bin/sh
 echo -n 'Starting kippo in background...'
-authbind --deep twistd -y kippo.tac -l log/kippo.log --pidfile kippo.pid" | sudo tee -a start.sh
+authbind --deep twistd -y kippo.tac -l log/kippo.log --pidfile kippo.pid" |tee -a start.sh
 echo "Installing Kippo Extra commands"
-sudo pip install kippo-extra
+ pip install kippo-extra
 echo "Installing Kippo-Graph which will be available at http://{IPADDRESS_OF_PI}/kippo-graph/"
 sleep 3
 cd /var/www
-sudo git clone https://github.com/ikoniaris/kippo-graph.git
+ git clone https://github.com/ikoniaris/kippo-graph.git
 cd kippo-graph
-sudo chmod 777 generated-graphs
-sudo sed -i 's/username/kippo/' /var/www/kippo-graph/config.php
-sudo sed -i 's/password/$kippopass/' /var/www/kippo-graph/config.php
-sudo sed -i 's/database/kippo;/' /var/www/kippo-graph/config.php
+ chmod 777 generated-graphs
+ sed -i 's/username/kippo/' /var/www/kippo-graph/config.php
+ sed -i 's/password/$kippopass/' /var/www/kippo-graph/config.php
+ sed -i 's/database/kippo;/' /var/www/kippo-graph/config.php
 #cd /opt/
 #sudo git clone https://github.com/ikoniaris/kippo-malware.git
 echo "Your Raspberry Pi SSH port must be changed so kippo can run on port 22"
@@ -223,7 +223,7 @@ read -p "Enter new port number" $sshport
 cp /etc/ssh/sshd_config /etc/ssh/sshd_config_backup
 echo "Backup made to /etc/ssh/sshd_config_backup"
 sleep 3
-sudo sed -i 's/Port 22/Port $sshport/' /etc/ssh/sshd_config
+ sed -i 's/Port 22/Port $sshport/' /etc/ssh/sshd_config
 echo "SSH will now start on port $sshport"
 sleep 10
 echo "Restart SSH service with: /etc/init.d/ssh to complete changes."
@@ -236,19 +236,19 @@ f_install
 # = INSTALLING KOJONEY =
 # =======================
 f_install_kojoney(){
-sudo apt-get update
-sudo apt-get install -y python-setuptools python-dev
-sudo apt-get install -y gcc cpp wget m4
-sudo apt-get install -y python-xmpp python-dns python-psycopg2
+echo "updating apt-get cache"
+ apt-get update >> /dev/null
+ apt-get install -y python-setuptools python-dev gcc cpp wget m4\
+							python-xmpp python-dns python-psycopg2
 #python-devel zlib zlib-devel MySQL-python glibc-headers glibc-devel kernel-headers
 cd /opt
-sudo wget https://kojoney-patch.googlecode.com/files/kojoney-0.0.5.2.tar.gz
-sudo chmod 777 kojoney-0.0.5.2.tar.gz
-sudo tar -zxvf kojoney-0.0.5.2.tar.gz
-sudo rm -rf kojoney-0.0.5.2.tar.gz
-sudo chmod -R 755 kojoney
+ wget https://kojoney-patch.googlecode.com/files/kojoney-0.0.5.2.tar.gz
+ chmod 777 kojoney-0.0.5.2.tar.gz
+ tar -zxvf kojoney-0.0.5.2.tar.gz
+ rm -rf kojoney-0.0.5.2.tar.gz
+ chmod -R 755 kojoney
 cd kojoney
-sudo ./INSTALL.sh
+ ./INSTALL.sh
 echo "Install to /opt/kojoney"
 sleep 5
 f_install
