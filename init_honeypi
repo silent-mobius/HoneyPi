@@ -16,6 +16,7 @@ logfile='honeyPi.log'
 logfolder='/var/log/honeyPi'
 logFile='$logfolder/$logfile'
 honeyPATH=''
+export PATH=$PATH:/opt/dionaea/bin
 ###Funcs ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 log_chk(){
 	if [ ! -e $logfolder ];then
@@ -34,15 +35,35 @@ honey_start(){
 		echo "apache dependencies - please start apache: systemctl start apache2.service"
 		exit 1
 	fi
-	export PATH=$PATH:/opt/dionaea/bin
+
 	dionaea -l all,debug -r /opt/dionaea -w /opt/dionaea -p /opt/dionaea/var/dionaea.pid
-	python /opt/ragpicker/ragpicker.py -t 5 --log-filename=/opt/ragpicker/log.txt
+	python /opt/ragpicker/ragpicker.py -t 5 --log-filename=$logfolder/ragpicker.log
 	cd /opt/honssh;./honsshctrl START
 	cd /opt/kippo-read-only;./start.sh
 	}
 
 honey_stop(){
-	
+		sts_glastopf=`ps aux |grep glastopf >> /dev/null;echo $?`
+		sts_dionaea=`ps aux | grep dionaea >> /dev/null;echo $?`
+		sts_ragpicker=`ps aux| grep ragpicker >> /dev/null;echo $?`
+		sts_honssh=`ps aux |grep honssh >> /dev/null; echo $?`
+		sts_kippo=`ps aux|grep kippo >>/dev/null ;echo $?`
+		
+		if [ "$sts_glastopf" == '0' ];then
+			killall glastopf 
+		fi
+		if [ "$sts_dionaea" == '0' ];then
+			killall dionaea
+		fi
+		if [ "$sts_ragpicker" == '0' ];then
+			killall  ragpicker
+		fi
+		if [ "$sts_honssh" == '0' ];then
+			killall honssh
+		fi
+		if [ "$sts_kippo" == '0' ];then
+			killall kippo
+		fi
 	
 	}
 
