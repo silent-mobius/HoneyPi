@@ -108,7 +108,8 @@ honey_status(){
 ###
  log_chk
 	case "$1" in
-		start	) honey_start ;;
-		stop	)  honey_stop ;;
+		start	) honey_start  ;;
+		stop	) honey_stop   ;;
+		status	) honey_status ;;
 		restart	) honey_stop;honey_start;;
-		*		) " Usage: init_honeyPi [start|stop|status]"
+		*	) " Usage: init_honeyPi [start|stop|status]" ;;
