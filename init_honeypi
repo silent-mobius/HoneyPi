@@ -27,7 +27,18 @@ log_chk(){
 	}
 
 honey_start(){
-	
+		apacheSts=`/etc/init.d/apache2 status >> /dev/null ;echo $?`
+	if [ "$apacheSts" == "0" ];then
+	cd /opt/glastopfi && glastopf-runner
+	else
+		echo "apache dependencies - please start apache: systemctl start apache2.service"
+		exit 1
+	fi
+	export PATH=$PATH:/opt/dionaea/bin
+	dionaea -l all,debug -r /opt/dionaea -w /opt/dionaea -p /opt/dionaea/var/dionaea.pid
+	python /opt/ragpicker/ragpicker.py -t 5 --log-filename=/opt/ragpicker/log.txt
+	cd /opt/honssh;./honsshctrl START
+	cd /opt/kippo-read-only;./start.sh
 	}
 
 honey_stop(){
@@ -51,26 +62,23 @@ honey_status(){
 			echo " "
 			exit 1
 		fi
-		if [ "$sts_glastopf" == '0' ];then
+		if [ "$sts_dionaea" == '0' ];then
 			echo " "
 			exit 1
 		fi
-		if [ "$sts_glastopf" == '0' ];then
+		if [ "$sts_ragpicker" == '0' ];then
 			echo " "
 			exit 1
 		fi
-		if [ "$sts_glastopf" == '0' ];then
+		if [ "$sts_honssh" == '0' ];then
 			echo " "
 			exit 1
 		fi
-		if [ "$sts_glastopf" == '0' ];then
+		if [ "$sts_kippo" == '0' ];then
 			echo " "
 			exit 1
 		fi
-		if [ "$sts_glastopf" == '0' ];then
-			echo " "
-			exit 1
-		fi
+		
 	}
 ###
 #Main- _ - _ - _ - _ - _ - _ -_ - _ - _ - _ - _ - _ - _ - _ - _ - _ - _ -
