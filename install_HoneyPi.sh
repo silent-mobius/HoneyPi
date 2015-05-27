@@ -260,6 +260,16 @@ sleep 5
 f_install
 }
 
+f_set_honeyPi_init(){
+	chk_init=`ls |grep init_honeyPi.sh`
+	if [ -e $chk_init ];then
+		cp init_honeyPi.sh /etc/init.d/honeyPi
+			chmod 755  /etc/init.d/honeyPi
+	else
+		echo " something went wrong - Please copy init_honeyPi.sh file to /etc/init.d/, & also notify  the developer"
+	fi
+	}
+
 ###
 #Main
 ###
@@ -279,6 +289,7 @@ clear
 	echo "[5] Install Kojoney (SSH HONEYPOT/Low Intercation)"
 	echo "[6] Install Twisted Honeypots (SSH/FTP/Telnet Password Collection/Low Interaction)"
 	echo "[7] Install Glastopf (Multiple Services/Low Interaction)"
+	echo "[8] Setup init script in services"
 	echo "[0] Exit to Main Menu"
 	echo -n "Enter your menu choice [1-4]: "
 # wait for character input
@@ -291,6 +302,7 @@ clear
 				5) f_install_kojoney ;;
 				6) f_install_twisted_honeypots ;;
 				7) f_install_glastopf ;;
+				8) f_set_honeyPi_init ;;
 				0) exit 0 ;;
 				*) echo "Incorrect choice..." ;
 			esac
