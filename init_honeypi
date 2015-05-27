@@ -121,5 +121,5 @@ honey_status(){
 		stop	) echo " stopping the honeyPI";honey_stop   ;;
 		status	) honey_status ;;
 		restart	) honey_stop;honey_start;;
-		*		) " Error $1 unknown options --> Usage: init_honeyPi [start|stop|status]" ;;
+		*	) " Error $1 unknown options --> Usage: init_honeyPi [start|stop|status]" ;;
 	esac
